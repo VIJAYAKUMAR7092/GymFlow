@@ -8,12 +8,16 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 
 from .models import User
-
 from .serializers import (
     LoginSerializer,
     RegisterSerializer,
     UserSerializer,
 )
+
+
+# ==========================
+# Register
+# ==========================
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -22,7 +26,6 @@ class RegisterView(APIView):
 
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         serializer.save()
 
         user = serializer.instance
@@ -47,7 +50,7 @@ Please approve this account.
             )
 
         except Exception as e:
-            print("Mail Error:", e)
+            print("Registration Mail Error:", e)
 
         return Response(
             {
@@ -56,6 +59,10 @@ Please approve this account.
             status=status.HTTP_201_CREATED,
         )
 
+
+# ==========================
+# Login
+# ==========================
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -76,6 +83,12 @@ class LoginView(APIView):
                 "role": user.role,
             }
         )
+
+
+# ==========================
+# Pending Users
+# ==========================
+
 class PendingUsersView(APIView):
     permission_classes = [IsAdminUser]
 
@@ -86,6 +99,12 @@ class PendingUsersView(APIView):
         serializer = UserSerializer(users, many=True)
 
         return Response(serializer.data)
+
+
+# ==========================
+# Approve User
+# ==========================
+
 class ApproveUserView(APIView):
     permission_classes = [IsAdminUser]
 
@@ -97,15 +116,47 @@ class ApproveUserView(APIView):
         except User.DoesNotExist:
             return Response(
                 {"message": "User Not Found"},
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         user.is_approved = True
         user.save()
 
+        try:
+            send_mail(
+                subject="🎉 GymFlow Account Approved",
+                message=f"""
+Hello {user.username},
+
+Congratulations!
+
+Your GymFlow account has been approved.
+
+You can now login and start using GymFlow.
+
+Email:
+{user.email}
+
+Thank you,
+GymFlow Team
+""",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+        except Exception as e:
+            print("Approval Mail Error:", e)
+
         return Response(
             {"message": "User Approved Successfully"}
         )
+
+
+# ==========================
+# Reject User
+# ==========================
+
 class RejectUserView(APIView):
     permission_classes = [IsAdminUser]
 
@@ -117,7 +168,7 @@ class RejectUserView(APIView):
         except User.DoesNotExist:
             return Response(
                 {"message": "User Not Found"},
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         user.delete()
