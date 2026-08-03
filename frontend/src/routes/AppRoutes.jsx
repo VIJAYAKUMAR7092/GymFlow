@@ -15,20 +15,19 @@ import Register from "../pages/auth/Register";
 
 import LandingPage from "../pages/public/LandingPage";
 
+import PendingUsers from "../pages/admin/PendingUsers";
+
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
-
       <Routes>
 
         {/* Public Routes */}
 
         <Route path="/" element={<LandingPage />} />
-
         <Route path="/login" element={<Login />} />
-
         <Route path="/register" element={<Register />} />
 
         {/* Protected Routes */}
@@ -41,18 +40,18 @@ export default function AppRoutes() {
           }
         >
           <Route path="/dashboard" element={<Dashboard />} />
-
           <Route path="/members" element={<Members />} />
-
           <Route path="/plans" element={<Plans />} />
-
           <Route path="/payments" element={<Payments />} />
-
           <Route path="/attendance" element={<Attendance />} />
-
           <Route path="/reports" element={<Reports />} />
-
           <Route path="/settings" element={<Settings />} />
+
+          {/* Admin */}
+          <Route
+            path="/pending-users"
+            element={<PendingUsers />}
+          />
         </Route>
 
         {/* 404 */}
@@ -60,7 +59,6 @@ export default function AppRoutes() {
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>
-
     </BrowserRouter>
   );
 }

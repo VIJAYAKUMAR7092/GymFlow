@@ -11,51 +11,62 @@ import {
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
-
 import { getSettings } from "../../services/settingsService";
-
-const menuItems = [
-  {
-    icon: LayoutDashboard,
-    title: "Dashboard",
-    path: "/dashboard",
-  },
-  {
-    icon: Users,
-    title: "Members",
-    path: "/members",
-  },
-  {
-    icon: CreditCard,
-    title: "Plans",
-    path: "/plans",
-  },
-  {
-    icon: Wallet,
-    title: "Payments",
-    path: "/payments",
-  },
-  {
-    icon: CalendarCheck,
-    title: "Attendance",
-    path: "/attendance",
-  },
-  {
-    icon: BarChart3,
-    title: "Reports",
-    path: "/reports",
-  },
-  {
-    icon: Settings,
-    title: "Settings",
-    path: "/settings",
-  },
-];
 
 export default function Sidebar() {
   const navigate = useNavigate();
 
   const [gymName, setGymName] = useState("GymFlow");
+
+  const isOwner = localStorage.getItem("is_owner") === "true";
+
+  const menuItems = [
+    {
+      icon: LayoutDashboard,
+      title: "Dashboard",
+      path: "/dashboard",
+    },
+    {
+      icon: Users,
+      title: "Members",
+      path: "/members",
+    },
+    {
+      icon: CreditCard,
+      title: "Plans",
+      path: "/plans",
+    },
+    {
+      icon: Wallet,
+      title: "Payments",
+      path: "/payments",
+    },
+    {
+      icon: CalendarCheck,
+      title: "Attendance",
+      path: "/attendance",
+    },
+    {
+      icon: BarChart3,
+      title: "Reports",
+      path: "/reports",
+    },
+    {
+      icon: Settings,
+      title: "Settings",
+      path: "/settings",
+    },
+
+    ...(isOwner
+      ? [
+          {
+            icon: Users,
+            title: "Pending Users",
+            path: "/pending-users",
+          },
+        ]
+      : []),
+  ];
 
   useEffect(() => {
     loadSettings();
@@ -76,7 +87,9 @@ export default function Sidebar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("email");
     localStorage.removeItem("role");
+    localStorage.removeItem("is_owner");
     localStorage.removeItem("remember");
 
     navigate("/login");
@@ -84,15 +97,12 @@ export default function Sidebar() {
 
   return (
     <aside className="w-72 bg-slate-900 text-white min-h-screen flex flex-col">
-
       <div className="p-6">
-
         <h1 className="text-3xl font-bold mb-10">
           💪 {gymName}
         </h1>
 
         <div className="space-y-3">
-
           {menuItems.map((item) => {
             const Icon = item.icon;
 
@@ -113,13 +123,10 @@ export default function Sidebar() {
               </NavLink>
             );
           })}
-
         </div>
-
       </div>
 
       <div className="mt-auto p-6">
-
         <button
           onClick={handleLogout}
           className="flex items-center justify-center gap-3 w-full bg-red-600 hover:bg-red-700 transition py-3 rounded-xl font-semibold"
@@ -127,9 +134,7 @@ export default function Sidebar() {
           <LogOut size={20} />
           Logout
         </button>
-
       </div>
-
     </aside>
   );
 }

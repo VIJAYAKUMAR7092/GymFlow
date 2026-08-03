@@ -20,9 +20,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         password = validated_data.pop("password")
 
         user = User(**validated_data)
+
         user.set_password(password)
 
-        user.role = "ADMIN"
+        # Every new registration becomes Reception
+        user.role = "RECEPTION"
+
+        # Needs approval before login
         user.is_approved = False
 
         user.save()
@@ -38,10 +42,10 @@ class LoginSerializer(serializers.Serializer):
 
         user = authenticate(
             username=data["username"],
-            password=data["password"]
+            password=data["password"],
         )
 
-        if not user:
+        if user is None:
             raise serializers.ValidationError(
                 "Invalid username or password."
             )
@@ -54,6 +58,8 @@ class LoginSerializer(serializers.Serializer):
         data["user"] = user
 
         return data
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -62,6 +68,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "email",
             "phone",
+            "role",
             "is_approved",
             "created_at",
         ]

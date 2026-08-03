@@ -44,12 +44,14 @@ export default function Login() {
     console.log("LOGIN RESPONSE:", res.data);
 
     localStorage.setItem("token", res.data.token);
-    localStorage.setItem("username", res.data.username);
-    localStorage.setItem("role", res.data.role);
+localStorage.setItem("username", res.data.username);
+localStorage.setItem("email", res.data.email);
+localStorage.setItem("role", res.data.role);
+localStorage.setItem("is_owner", res.data.is_owner);
 
-    if (remember) {
-      localStorage.setItem("remember", "true");
-    }
+if (remember) {
+  localStorage.setItem("remember", "true");
+}
 
     toast.success("Welcome Back 👋");
 

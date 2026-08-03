@@ -10,6 +10,7 @@ import RecentPayments from "../../components/dashboard/RecentPayments";
 import TopBar from "../../components/dashboard/TopBar";
 import Notifications from "../../components/dashboard/Notifications";
 import AttendancePieChart from "../../components/dashboard/AttendancePieChart";
+import { Link } from "react-router-dom";
 
 import {
   FaUsers,
@@ -124,6 +125,12 @@ console.log("Attendance :", attendanceRes.data);
         <AttendanceProgress />
 
         <QuickActions />
+        <Link
+  to="/pending-users"
+  className="block bg-red-600 hover:bg-red-700 text-white text-center py-3 rounded-xl font-semibold transition"
+>
+  Pending User Approvals
+</Link>
       </div>
     </div>
     

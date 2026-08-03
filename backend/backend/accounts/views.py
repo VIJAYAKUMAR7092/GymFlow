@@ -77,12 +77,14 @@ class LoginView(APIView):
         token, _ = Token.objects.get_or_create(user=user)
 
         return Response(
-            {
-                "token": token.key,
-                "username": user.username,
-                "role": user.role,
-            }
-        )
+    {
+        "token": token.key,
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
+        "is_owner": user.username == "vijay",
+    }
+)
 
 
 # ==========================
@@ -93,6 +95,12 @@ class PendingUsersView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
+
+        if request.user.email != "vijayakumar709202@gmail.com":
+            return Response(
+                {"message": "Permission Denied"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         users = User.objects.filter(is_approved=False)
 
@@ -109,6 +117,12 @@ class ApproveUserView(APIView):
     permission_classes = [IsAdminUser]
 
     def post(self, request, pk):
+
+        if request.user.email != "vijayakumar709202@gmail.com":
+            return Response(
+                {"message": "Permission Denied"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         try:
             user = User.objects.get(pk=pk)
@@ -161,6 +175,12 @@ class RejectUserView(APIView):
     permission_classes = [IsAdminUser]
 
     def delete(self, request, pk):
+
+        if request.user.email != "vijayakumar709202@gmail.com":
+            return Response(
+                {"message": "Permission Denied"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         try:
             user = User.objects.get(pk=pk)
