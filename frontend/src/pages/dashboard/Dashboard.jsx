@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import HeroBanner from "../../components/dashboard/HeroBanner";
+import TopBar from "../../components/dashboard/TopBar";
 import StatCard from "../../components/dashboard/StatCard";
-import RevenueChart from "../../components/dashboard/RevenueChart";
+import Notifications from "../../components/dashboard/Notifications";
+import AttendancePieChart from "../../components/dashboard/AttendancePieChart";
 import RecentMembers from "../../components/dashboard/RecentMembers";
 import AttendanceProgress from "../../components/dashboard/AttendanceProgress";
 import QuickActions from "../../components/dashboard/QuickActions";
-import RecentPayments from "../../components/dashboard/RecentPayments";
-import TopBar from "../../components/dashboard/TopBar";
-import Notifications from "../../components/dashboard/Notifications";
-import AttendancePieChart from "../../components/dashboard/AttendancePieChart";
-import { Link } from "react-router-dom";
 
 import {
   FaUsers,
@@ -25,6 +23,8 @@ import { getPayments } from "../../services/paymentService";
 import { getAttendance } from "../../services/attendanceService";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
   const [stats, setStats] = useState({
     members: 0,
     revenue: 0,
@@ -45,14 +45,10 @@ export default function Dashboard() {
           getPayments(),
           getAttendance(),
         ]);
-        console.log("Members :", membersRes.data);
-console.log("Plans :", plansRes.data);
-console.log("Payments :", paymentsRes.data);
-console.log("Attendance :", attendanceRes.data);
 
       const revenue = paymentsRes.data.reduce(
         (total, payment) => total + Number(payment.amount),
-        0,
+        0
       );
 
       setStats({
@@ -102,37 +98,33 @@ console.log("Attendance :", attendanceRes.data);
         />
       </div>
 
-     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <AttendanceProgress />
+        </div>
 
-  <div className="lg:col-span-2">
+        <Notifications />
+      </div>
 
-    <AttendanceProgress />
-
-  </div>
-
-  <Notifications />
-
-</div>
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-  <AttendancePieChart />
-
-  <RecentMembers />
-
-</div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <AttendancePieChart />
+        <RecentMembers />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <AttendanceProgress />
-
         <QuickActions />
-        <Link
-  to="/pending-users"
-  className="block bg-red-600 hover:bg-red-700 text-white text-center py-3 rounded-xl font-semibold transition"
->
-  Pending User Approvals
-</Link>
       </div>
+
+      {/* OWNER ONLY */}
+      {localStorage.getItem("username") === "vijay" && (
+        <button
+          onClick={() => navigate("/pending-users")}
+          className="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-bold transition"
+        >
+          Pending User Approvals
+        </button>
+      )}
     </div>
-    
   );
 }
